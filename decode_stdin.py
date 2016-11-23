@@ -1,7 +1,6 @@
-import numpy as np, sys, time
-import matplotlib.pyplot as plt
-from scipy.signal import decimate
-from numpy import zeros
+import sys
+import numpy as np
+import scipy.signal as sig
 
 def to_string(symbols):
 	st = ''
@@ -33,13 +32,6 @@ def str2num(s):
 		total += int(s[i]) * pow(2,len(s)-i-1)
 	return total
 
-def bin2str(bits):
-	s = ""
-	for b in bits:
-		if b: s += "1"
-		else: s += "0"
-	return s
-
 def symbols2bits(s):
 	bits = ""
 	for i in range(0, len(s), 3):
@@ -63,10 +55,10 @@ print "SAMPLES PER SYMBOL", samples_per_symbol
 
 samples_per_symbol = samples_per_symbol / decimation
 
-def extract_temp(samples, decimation, samples_per_symbol):
-	samples = decimate(samples, decimation)
+def extract_data(samples, decimation, samples_per_symbol):
+	samples = sig.decimate(samples, decimation, ftype='fir')
 	samples = to_amplitude(samples)
-	samples = np.convolve(samples, np.ones(samples_per_symbol)/samples_per_symbol, mode='same')
+	samples = sig.convolve(samples, np.ones(samples_per_symbol)/samples_per_symbol, mode='same')
 	samples = samples > 0.6
 
 	offset = 0
@@ -79,7 +71,6 @@ def extract_temp(samples, decimation, samples_per_symbol):
 
 	symbols = to_string(samples)
 	print "SYMBOLS", symbols
-	sys.stdout.flush()
 	start = symbols.find("111000111000111000111000")
 	if start < 0: return False
 
@@ -87,7 +78,7 @@ def extract_temp(samples, decimation, samples_per_symbol):
 	if len(bits) < 37: return False
 	t = temp(bits)
 	print "BITS", bits
-	return {'temp':t}
+	return {'temperature':t}
 
 def loop(buffer_size):
 	while 1:
@@ -95,16 +86,15 @@ def loop(buffer_size):
 		samples = to_amplitude(samples)
 		if len(samples) == 0: break
 
-		sum = np.sum(samples > 0.1)
-		if sum < 300:
+		s = np.sum(samples > 0.1)
+		if s < 300:
 			continue
-		print "GOT A SIGNAL!", sum
+		print "GOT A SIGNAL!", s
 
 		samples = get_samples(buffer_size)
-		t = extract_temp(samples, decimation, samples_per_symbol)
-		if t:
-			print "VALUES", t
-			#time.sleep(25) #next signal comes in 30s
+		data = extract_data(samples, decimation, samples_per_symbol)
+		if data:
+			print "VALUES", data
 
 buffer_size = sample_rate/8
 loop(buffer_size)

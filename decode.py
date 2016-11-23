@@ -1,8 +1,6 @@
-import numpy, sys
-import matplotlib.pyplot as plt
-from matplotlib.widgets import Slider
-from scipy.signal import decimate
-from numpy import zeros
+import sys
+from scipy.signal import decimate, convolve
+from numpy import zeros, ones, uint8, sqrt, empty
 
 def to_string(symbols):
 	st = ''
@@ -13,20 +11,20 @@ def to_string(symbols):
 
 def get_samples(filename):
 	f = open(filename, "rb")
-	bytestream = numpy.fromfile(f, dtype=numpy.uint8)
+	bytestream = np.fromfile(f, dtype=uint8)
 	f.close()
 	iq = get_iq(bytestream)
 	return iq
 
 def get_iq(bytes):
-	iq = numpy.empty(len(bytes)//2, 'complex')
+	iq = empty(len(bytes)//2, 'complex')
 	iq.real, iq.imag = bytes[::2], bytes[1::2]
 	iq /= (255/2)
 	iq -= (1 + 1j)
 	return iq
 
 def to_amplitude(iq):
-	amp = numpy.sqrt(iq.real*iq.real+iq.imag*iq.imag)
+	amp = sqrt(iq.real*iq.real+iq.imag*iq.imag)
 	return amp
 
 def str2num(s):
@@ -79,7 +77,7 @@ print "NEW DECIMATION", decimation
 print "NEW CONVOLUTION SIZE", convolution_size
 
 #convolution_size = 50 #50
-samples = numpy.convolve(samples, numpy.ones(convolution_size)/convolution_size, mode='same')
+samples = convolve(samples, ones(convolution_size)/convolution_size, mode='same')
 samples = samples > 0.6
 
 offset = 0
