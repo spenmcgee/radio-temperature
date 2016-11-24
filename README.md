@@ -103,9 +103,9 @@ So the preamble consists of 4 pulses, each pulse contains about 1500 samples.  T
 
 So we know now that we want to use a value of *500 samples per symbol*.
 
-I *think* that I recorded `temp_recording_23.8` at 2.048 MHz.  This means that
+I *think* that I recorded `temp_recording_23.8` at 2.048 MHz.  This means that:
 
-`baud_rate = sample_rate / samples_per_symbol = 2048000 samples per second / 500 samples per symbol = 4096 symbols per second` (where there are 3 symbols per pulse window)
+`baud_rate = sample_rate / samples_per_symbol = 2048000 samples per second / 500 samples per symbol = 4096 symbols per second`
 
 So we can now set our convolution size to 500 and the smoothing will happen for the smallest pulse size of 500 samples per symbol as well as the others because they are larger multiples of 500.
 
