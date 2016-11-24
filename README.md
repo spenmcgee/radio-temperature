@@ -52,7 +52,7 @@ def to_amplitude(iq):
 	return amp
 ```
 
-By simply doing `np.sqrt(iq.real*iq.real+iq.imag*iq.imag)` we get the **amplitude** of the radio data for each sample.
+By simply doing `np.sqrt(iq.real*iq.real+iq.imag*iq.imag)` we get the *amplitude* of the radio data for each sample.
 
 Now that we have the amplitude, we can plot this data and if you've got an actual transmission burst in your data, you'll see some square wave type data. You can try this using the `plot_time.py` file which basically just does `get_samples` then demodulates using `to_amplitude` and simply plots this data:
 
@@ -87,13 +87,13 @@ Now that we know how the bits are in the data, we can look at how to extract the
 
 There are a number of ways to do this, but we can do something simple.  The more serious and robust way to extract data from a signal without any clock data is using *Clock Data Recovery* (http://www.arrowdevices.com/blog/beginners-guide-to-clock-data-recovery/).  This is a rather dense subject so luckily we don't need to delve into it to solve this problem.  Because the data is *bursty*, that is, the radio signals come in bursts, we can line everything as accurately as possible and extract the data.  Overtime, our lineup would get out of wack because of jitter or clock drift.  But we're not downloading gigabytes of data so it doesn't matter.
 
-The simply way is to simply decimate the signal such that the spacing of each sample falls into each tooth of the signal data.
+The simple way to extract the symbols is to decimate the signal such that the spacing of each sample falls into each pulse.
 
 We also need to smooth the data, and this is where *convolution* comes in.  This page shows pretty clearly what convolution is: https://en.wikipedia.org/wiki/Convolution.  You can think of it here as simply a moving average.
 
 The first step is to smooth the data by convolving with a series of ones.  The size of the convolution window is important.  The way I determined the size of the window is by determining the baud rate or the number of square wave bursts per second.  These square wave bursts are also called symbols.
 
-Looking at the temp_recording_23.8 file, I lower the `frame_size` and zoom in and roughly measure the number of samples for each of the different retangular pulses.  Also, just to be thorough, I plotted a histogram of the widths of the rectangle pulses (using `baud.py`) and found that there were 3 different widths: 500, 1000 and 1500.
+Looking at the temp_recording_23.8 file, I lower the `frame_size` and zoom in and roughly measure the number of samples for each of the different rectangular pulses.  Also, just to be thorough, I plotted a histogram of the widths of the rectangle pulses (using `baud.py`) and found that there were 3 different widths: 500, 1000 and 1500.
 
 So the preamble consists of 4 pulses, each pulse contains about 1500 samples.  Then after that, the pulses are either 500 or 1000 samples long.  We want to work with the smallest samples per symbol value, it should become apparent in a bit.  So we know now that we want to use a value of *500 samples per symbol*.
 
