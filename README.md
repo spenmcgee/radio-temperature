@@ -8,7 +8,7 @@ Example: `python decode_stdin.py 2048000 10 4096 < rtl_sdr -f 433920000 -g 40 -s
 
 Test: `python decode_stdin.py 2048000 10 4096 < temp_recording_23.8` # should output a temperature of 23.8
 
-Only requires a few numpy functions, namely decimate and convolve.
+Only requires a few numpy functions, namely `decimate` and `convolve`.
 
 I did this project for fun and to learn a bit how signal processing works.  I don't really know what I'm talking about, but for those looking to learn, I can share a few details.
 
@@ -115,7 +115,7 @@ The screenshot below shows the effect of convolution:
 
 Now all we have to do is apply a threshold and we'll get a tidy array of only True and False values: `samples2 = samples2 > 0.6`.  The value 0.6 was chosen because that is where the convolution line crosses the pulse boundaries.  This may be different depending on how close you hold the device to the antenna and how much you jack up the gain, but I didn't a change or fiddle with that nor try to normalize the data so that it works no matter how far away the device is from the antenna. This is something to do.
 
-Now lets decimate by `samples_per_symbol` to extract the symbols. I simply use `samples = samples[::samples_per_symbol]` to do this, we don't need to use the `decimate` function, it didn't work well anyways. By decimating by `samples_per_symbol` we should get 3 symbols or bits or whatever you want to call them, for each pulse. The reason it's 3 is because of the 500, 1000, 1500 breakdown of the pulse widths in sample lengths.  So this means that the preamble will look like this: `111000111000111000111000`, or 4 sets of `111000`.  This helps us find the start of the bit sequence.  Once we find that, we can parse out the rest.  A 1 or True value will have symbols `110` and a False value will be `100`.
+Now lets decimate by `samples_per_symbol` to extract the symbols. I simply use `samples = samples[::samples_per_symbol]` to do this; we don't need to use the `decimate` function, it didn't work well anyways. By decimating by `samples_per_symbol` we should get 3 symbols or bits or whatever you want to call them, for each pulse. The reason it's 3 is because of the 500, 1000, 1500 breakdown of the pulse widths in sample lengths.  So this means that the preamble will look like this: `111000111000111000111000`, or 4 sets of `111000`.  This helps us find the start of the bit sequence.  Once we find that, we can parse out the rest.  A 1 or True value will have symbols `110` and a False value will be `100`.
 
 We can plot the bits along with the raw samples and the convolved samples by running `python plot_symbols.py temp_recording_23.8 2048000 10 4096 1000`:
 
