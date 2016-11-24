@@ -121,7 +121,7 @@ We can plot the bits along with the raw samples and the convolved samples by run
 
 ![plot_symbols.py output of temp_recording_23.8](symbols.png)
 
-In this screenshot, we see the first bit pulse (at 612000 on the time axis) has three symbols, so it's part of the preamble.  It's obviously the last preamble pulse before the data since the next pulse has 2 symbols and then the ones after only have 1.
+In this screenshot, we see the first bit pulse (at 612000 on the time axis) has three symbols, so it's part of the preamble.  It's obviously the last preamble pulse before the data since the next pulse has 2 symbols and then the pulses after only have 1.
 
 We're pretty much done now.  We can convert the symbols `110` into 1 and `100` into 0, and make binary sequences.  The task now is to simply extract the correct bits and convert to temperature by subtracting 500 and dividing by 10.
 
@@ -131,4 +131,4 @@ If you run this in a loop, it will eat up all your CPU capacity.  The only way I
 
 Another thought is to look at how long the actual burst is.  I think it is 0.5 seconds, but I need to measure this.  This means we could sleep for something like 0.25 seconds and still get the data we need.
 
-Another thing to maybe do is sleep until the next burst of data, since they only come every 30 seconds.  They probably do this in the actual device to save battery power.  But still, once it stops sleeping, it's going to use a lot of CPU while it's listening for the next burst.
+Another thing to maybe do is sleep until the next burst of data, since they only come every 30 seconds.  They probably do this in the actual device to save battery power.
