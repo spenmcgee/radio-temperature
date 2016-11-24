@@ -14,7 +14,7 @@ I did this project for fun and to learn a bit how signal processing works.  I do
 
 I use strings just for convenience; they're easy to print, search, slice, etc.  A pure C implementation using buffers and bitwise operations would probably be better.  But I didn't really care.  This should also make it easy to work with if you want to edit any code here.
 
-## Installation:
+## Requirements/Installation
 
   * An rtl-sdr dongle, kinda like this: https://www.amazon.ca/digital-Stick-RTL-SDR-Receiver-RTL2832U/dp/B00CM3LNMM
   * python
