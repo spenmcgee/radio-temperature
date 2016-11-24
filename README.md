@@ -2,11 +2,11 @@
 
 Read radio temperature data from Lacrosse TX29 (?) transmitter using RTL-SDR
 
-To Run: python decode_stdin.py [sample_rate] [decimation] [baud_rate] < rtl_sdr -f [center_freq_hz] -g [gain] -s [sample_rate]
+To Run: `python decode_stdin.py [sample_rate] [decimation] [baud_rate] < rtl_sdr -f [center_freq_hz] -g [gain] -s [sample_rate]`
 
-Example: python decode_stdin.py 2048000 10 4096 < rtl_sdr -f 433920000 -g 40 -s 2048000
+Example: `python decode_stdin.py 2048000 10 4096 < rtl_sdr -f 433920000 -g 40 -s 2048000`
 
-Test: python decode_stdin.py 2048000 10 4096 < temp_recording_23.8 # should output a temperature of 23.8
+Test: `python decode_stdin.py 2048000 10 4096 < temp_recording_23.8` # should output a temperature of 23.8
 
 Only requires a few numpy functions, namely decimate and convolve.
 
@@ -19,15 +19,15 @@ I use strings just for convenience; they're easy to print, search, slice, etc.  
   * An rtl-sdr dongle, kinda like this: https://www.amazon.ca/digital-Stick-RTL-SDR-Receiver-RTL2832U/dp/B00CM3LNMM
   * python
   * Install rtl-sdr libraries
-    * Mac: brew install gr-osmosdr librtlsdr rtlsdr
+    * Mac: `brew install gr-osmosdr librtlsdr rtlsdr`
     * Win: http://sdr.osmocom.org/trac/wiki/rtl-sdr
-  * numpy & scipy: pip install numpy scipy
+  * numpy & scipy: `pip install numpy scipy`
 
 You should now be able to run the rtl_sdr program from the command line. Normally, you just need to pass 3 parameters: the center frequency, the gain and the sample rate.  This will not output anything meaningful, you need to pipe the output to another program to do something useful.
 
-You can test everything by doing: rtl_test
+You can test everything by doing: `rtl_test`
 
-You can also listen to the radio using: rtl_fm -f [freq in Hz] -M [fm or am]
+You can also listen to the radio using: `rtl_fm -f [freq in Hz] -M [fm or am]`
 
 After that, the rtl_sdr command line program simply outputs the raw IQ data (IQ stands for in-phase and quadrature components: https://en.wikipedia.org/wiki/In-phase_and_quadrature_components).  IQ data is basically a series of complex numbers (https://en.wikipedia.org/wiki/Complex_number) and so you can think of them as a series of vectors, they have 2 components each, the real part and the imaginary part.  This is a really great video explaining the basis of why digital radio data is represented as a stream of complex numbers: http://greatscottgadgets.com/sdr/6/.
 
