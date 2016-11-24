@@ -97,7 +97,9 @@ Note that below I actually determine there are 3 symbols per pulse, so I'm not s
 
 Looking at the temp_recording_23.8 file, I lower the `frame_size` and zoom in and roughly measure the number of samples for each of the different rectangular pulses.  Also, just to be thorough, I plotted a histogram of the widths of the rectangle pulses (using `baud.py`) and found that there were 3 different widths: 500, 1000 and 1500.
 
-So the preamble consists of 4 pulses, each pulse contains about 1500 samples.  Then after that, the pulses are either 500 or 1000 samples long.  We want to work with the smallest samples per symbol value, because each pulse comes in a window of size 1500.  Put another way, every 1500 samples, another bit of data comes in and that data will either by a 1 or 0 and we know its a one, if, in that 1500 window, 1000 of the first samples are high/True and then rest are low/False and we know its a 0 if in that 1500 sample window the first 500 samples are high/True and the rest are low/False.
+So the preamble consists of 4 pulses, each pulse contains about 1500 samples.  Then after that, the pulses are either 500 or 1000 samples long.  We want to work with the smallest samples per symbol value, because each pulse comes in a window of size 1500.  Put another way, every 1500 samples, another bit of data comes in and that data will either be a 1 or 0.
+  * we know it's a 1, if, in that 1500 sample window, the first 1000 samples are high/True and then rest are low/False
+  * we know it's a 0, if, in that 1500 sample window, the first 500 samples are high/True and the rest are low/False
 
 So we know now that we want to use a value of *500 samples per symbol*.
 
