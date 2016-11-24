@@ -93,6 +93,8 @@ We also need to smooth the data, and this is where *convolution* comes in.  This
 
 The first step is to smooth the data by convolving with a series of ones.  The size of the convolution window is important.  The way I determined the size of the window is by determining the baud rate or the number of square wave bursts per second.  These square wave bursts are also called symbols.
 
+Note that below I actually determine there are 3 symbols per pulse, so I'm not sure I'm using the term *symbol* exactly correctly here, but basically we're just trying to get to how many pulses come per second and then how many samples are in each pulse, given our sample rate.
+
 Looking at the temp_recording_23.8 file, I lower the `frame_size` and zoom in and roughly measure the number of samples for each of the different rectangular pulses.  Also, just to be thorough, I plotted a histogram of the widths of the rectangle pulses (using `baud.py`) and found that there were 3 different widths: 500, 1000 and 1500.
 
 So the preamble consists of 4 pulses, each pulse contains about 1500 samples.  Then after that, the pulses are either 500 or 1000 samples long.  We want to work with the smallest samples per symbol value, it should become apparent in a bit.  So we know now that we want to use a value of *500 samples per symbol*.
