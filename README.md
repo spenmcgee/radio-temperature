@@ -23,15 +23,15 @@ I use strings just for convenience; they're easy to print, search, slice, etc.  
     * Win: http://sdr.osmocom.org/trac/wiki/rtl-sdr
   * numpy & scipy: `pip install numpy scipy`
 
-You should now be able to run the rtl_sdr program from the command line. Normally, you just need to pass 3 parameters: the center frequency, the gain and the sample rate.  This will not output anything meaningful, you need to pipe the output to another program to do something useful.
+You should now be able to run the `rtl_sdr` program from the command line. Normally, you just need to pass 3 parameters: the center frequency, the gain and the sample rate.  This will not output anything meaningful, you need to pipe the output to another program to do something useful.
 
 You can test everything by doing: `rtl_test`
 
 You can also listen to the radio using: `rtl_fm -f [freq in Hz] -M [fm or am]`
 
-After that, the rtl_sdr command line program simply outputs the raw IQ data (IQ stands for in-phase and quadrature components: https://en.wikipedia.org/wiki/In-phase_and_quadrature_components).  IQ data is basically a series of complex numbers (https://en.wikipedia.org/wiki/Complex_number) and so you can think of them as a series of vectors, they have 2 components each, the real part and the imaginary part.  This is a really great video explaining the basis of why digital radio data is represented as a stream of complex numbers: http://greatscottgadgets.com/sdr/6/.
-
 ## Explanation
+
+The `rtl_sdr` command line program simply outputs the raw IQ data (IQ stands for in-phase and quadrature components: https://en.wikipedia.org/wiki/In-phase_and_quadrature_components).  IQ data is basically a series of complex numbers (https://en.wikipedia.org/wiki/Complex_number) and so you can think of them as a series of vectors, they have 2 components each, the real part and the imaginary part.  This is a really great video explaining the basis of why digital radio data is represented as a stream of complex numbers: http://greatscottgadgets.com/sdr/6/.
 
 Since the data is coming in on stdin, it's easy to capture the data in python:
 
@@ -54,15 +54,15 @@ def to_amplitude(iq):
 
 By simply doing `np.sqrt(iq.real*iq.real+iq.imag*iq.imag)` we get the *amplitude* of the radio data for each sample.
 
-Now that we have the amplitude, we can plot this data and if you've got an actual transmission burst in your data, you'll see some square wave type data. You can try this using the `plot_time.py` file which basically just does `get_samples` then demodulates using `to_amplitude` and simply plots this data:
+Now that we have the amplitude, we can plot this data and if you've got an actual transmission burst in your data, you'll see some square wave type pulses. You can try this using the `plot_time.py` file which basically just does `get_samples` then demodulates using `to_amplitude` and simply plots this data:
 
 `python plot_time.py temp_recording_23.8 [decimation] [frame_size]`
 
-Let's look at these 2 parameters, `decimation` and `frame_size`. Decimating basically reduces the number of samples.  If you decimate by 10, then you'll have a factor of 10 fewer samples after decimation.  The decimation also does some filtering to account for aliasing.  We decimate because we don't need all the samples, the resolution of the transmission is too high (the file temp_recording_23.8 was recorded at 2.048 MHz which is unnecessarily high).  By decimating, we improve efficiency.  The amount of decimating you can do depends on the Nyquist limit, or 2 times the frequency or data/baud rate of your signal (http://photo.stackexchange.com/questions/10755/what-is-the-nyquist-limit-and-what-is-its-significance-to-photographers).
+There 2 other things going on in `plot_time.py` and they concern the 2 parameters `decimation` and `frame_size`. Decimating basically reduces the number of samples.  If you decimate by 10, then you'll have a factor of 10 fewer samples after decimation.  The decimation also does some filtering to account for aliasing.  We decimate because we don't need all the samples, the resolution of the transmission is too high (the file temp_recording_23.8 was recorded at 2.048 MHz which is unnecessarily high).  By decimating, we improve efficiency.  The amount of decimating you can do depends on the *Nyquist limit*, or 2 times the frequency or data/baud rate of your signal (http://photo.stackexchange.com/questions/10755/what-is-the-nyquist-limit-and-what-is-its-significance-to-photographers).
 
 All this to say that by decimating, you make the job a lot easier because you have fewer samples and it represents the same signal anyways.
 
-The other thing that the `plot_time.py` program is doing is breaking up the signal into frames.  Each frame will have `frame_size` number of samples in it.  This is just for viewing simplicity.  It's so that you can view the signal a good resolution and zoom level and click through the signal in a series of frames using the slider on the bottom.
+The other thing that the `plot_time.py` program is doing is breaking up the signal into frames.  Each frame will have `frame_size` number of samples in it.  This is just for viewing simplicity.  It's so that you can view the signal at a good resolution and zoom level and click through the signal in a series of frames using the slider on the bottom.
 
 So if you run: `python plot_time.py temp_recording_23.8 10 2000` then you should get something like this:
 
@@ -113,7 +113,7 @@ The screenshot below shows the effect of convolution:
 
 ![plot_convolve.py output of temp_recording_23.8](convolve.png)
 
-Now all we have to do is apply a threshold and we'll get a tidy array of only True and False values: `samples2 = samples2 > 0.6`.  The value 0.6 was chosen because that is where the convolution line crosses the pulse boundaries.  This may be different depending on how close you hold the device to the antenna and how much you jack up the gain, but I didn't a change to fiddle with that nor try to normalize the data so that it works no matter how far away the device is from the antenna.
+Now all we have to do is apply a threshold and we'll get a tidy array of only True and False values: `samples2 = samples2 > 0.6`.  The value 0.6 was chosen because that is where the convolution line crosses the pulse boundaries.  This may be different depending on how close you hold the device to the antenna and how much you jack up the gain, but I didn't a change or fiddle with that nor try to normalize the data so that it works no matter how far away the device is from the antenna. This is something to do.
 
 Now lets decimate by `samples_per_symbol` to extract the symbols. I simply use `samples = samples[::samples_per_symbol]` to do this, we don't need to use the `decimate` function, it didn't work well anyways. By decimating by `samples_per_symbol` we should get 3 symbols or bits or whatever you want to call them, for each pulse. The reason it's 3 is because of the 500, 1000, 1500 breakdown of the pulse widths in sample lengths.  So this means that the preamble will look like this: `111000111000111000111000`, or 4 sets of `111000`.  This helps us find the start of the bit sequence.  Once we find that, we can parse out the rest.  A 1 or True value will have symbols `110` and a False value will be `100`.
 
